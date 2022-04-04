@@ -7,4 +7,5 @@
 
 # Artifacts
 /out/
+*.txt
 genprime

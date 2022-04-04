@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <omp.h>
+#include <math.h>
 
 #define MAX_THREAD_NUM 100
 
@@ -41,13 +42,65 @@ int main(int argc, char *argv[])
     return 1;
   }
 
+  // Initialize primes array, first assume all numbers are prime
+  // except 0 and 1
+  int *primes = (int *)malloc((n + 1) * sizeof(int));
+  primes[0] = 0;
+  primes[1] = 0;
+  for (int i = 2; i <= n; i++)
+  {
+    primes[i] = 1;
+  }
+
   double start_time, finish_time;
   start_time = omp_get_wtime(); // record start time
+
+  for (int i = 2; i <= floor(((double)(n + 1)) / 2); i++)
+  {
+    if (primes[i] == 0)
+    {
+      continue;
+    }
+
+#pragma omp parallel for num_threads(thread_count)
+    for (int j = i + i; j <= n; j += i)
+    {
+      if (primes[j] == 1)
+      {
+        primes[j] = 0;
+      }
+    }
+  }
 
   finish_time = omp_get_wtime(); // record finish time
 
   // Print the elapsed time
   printf("Time take for the main part: %f\n", finish_time - start_time);
+
+  // Filename should be n.txt
+  char *filename = (char *)malloc(strlen(n_str) + 4);
+  strcpy(filename, n_str);
+  strcat(filename, ".txt");
+
+  FILE *fp = fopen(filename, "w");
+
+  if (fp == NULL)
+  {
+    printf("Error: cannot open file \"%s\"\n", filename);
+    return 1;
+  }
+
+  // Print the primes to the file
+  int order = 1;
+  for (int i = 2; i <= n; i++)
+  {
+    if (primes[i] == 0)
+    {
+      continue;
+    }
+    fprintf(fp, "%d, %d\n", order, i);
+    order += 1;
+  }
 
   return 0;
 }
