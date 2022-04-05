@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     {
       continue;
     }
-    fprintf(fp, "%d, %d\n", order, i);
+    fprintf(fp, "%d %d\n", order, i);
     order += 1;
   }
 
