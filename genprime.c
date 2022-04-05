@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
   double start_time, finish_time;
   start_time = omp_get_wtime(); // record start time
 
-  for (int i = 2; i <= floor(((double)(n + 1)) / 2); i++)
+  for (int i = 2; i * i <= n; i++)
   {
     if (primes[i] == 0)
     {
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     }
 
 #pragma omp parallel for num_threads(thread_count)
-    for (int j = i + i; j <= n; j += i)
+    for (int j = i * i; j <= n; j += i)
     {
       if (primes[j] == 1)
       {
